@@ -10,7 +10,7 @@ router.get("/",function(req,res){
 
 router.post("/",function(req,res){
 
-    var category ="bloodbank";
+    var category ="user";
 
     var name= req.body.username;
     var password= req.body.password;   
@@ -58,7 +58,7 @@ router.post("/",function(req,res){
         // Create location table if not exists
         var sql = 'CREATE TABLE IF NOT EXISTS location(pincode varchar(6) NOT NULL UNIQUE,city varchar(30) NOT NULL,state varchar(30) NOT NULL,country varchar(30) NOT NULL,PRIMARY KEY (pincode));';
         
-        mysqlConnection.query(sqltable,[userDetail],function (err, data) { 
+        mysqlConnection.query(sql,[userDetail],function (err, data) { 
             if (err) throw err;
             console.log("location table created successfully "); 
         });
@@ -82,7 +82,6 @@ router.post("/",function(req,res){
     }
     // Blood Bank signup
     else if(category=="bloodbank"){
-        
         var bankDetail=[];
         bankDetail.push(name);
         bankDetail.push(emailId);
