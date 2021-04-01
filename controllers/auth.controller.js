@@ -2,9 +2,30 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const mysqlConnection = require("../connection");
 const bodyParser = require("body-parser");
+const joi = require("@hapi/joi");    // For Validation
+
+
+const schema = joi.object({
+    category: joi.string().min(3).max(10).required(),
+    userName: joi.string().min(6).max(40),
+    bloodBankName: joi.string().min(6).max(40),
+    emailId: joi.string().min(6).max(40).required().email(),
+    password: joi.string().min(6).max(10).required(),
+    mobile: joi.string().regex(/^[0-9]{10}$/).messages({'string.pattern.base': 'Phone number must have 10 digits.'}),
+    dateofbirth: joi.date().raw(),
+    gender: joi.string(),
+    bloodGr: joi.string(),
+    pincode: joi.string().max(6),
+    city: joi.string().max(30),
+    state: joi.string().max(30),
+    country: joi.string().max(30)
+});
+
 
 async function signUp(req, res){
-    //Sign up
+    //Validate the data 
+    const {error} = schema.validate(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
 
     //salting
     const salt = await bcrypt.genSaltSync(10);
@@ -53,15 +74,16 @@ function userRegistration(req,res,hashedPassword){
                 }
             );    
 
-            //insert location in location table 
-            var sqlLocation = 'INSERT INTO location (pincode, city, state ,country) values (?)';
+            //  insert location in location table  
+            var sqlLocation = "INSERT IGNORE INTO location (pincode, city, state ,country) values (?)";
             mysqlConnection.query(sqlLocation,[locationData],function (err, data) { 
                 if (err) throw err;
-                console.log("location data is inserted successfully "); 
+                console.log("location data is inserted successfully"); 
             });
 
         }else{
-            return res.redirect('/?error=' + encodeURIComponent('Email already exists!'));
+            console.log("Email already exists!");
+            return res.redirect('/?error=' + encodeURIComponent('Email already exists!')); 
         }
 
     }); 
@@ -69,7 +91,7 @@ function userRegistration(req,res,hashedPassword){
 
 function bankRegistration(req,res,hashedPassword) {
     var bankDetail=[];
-    bankDetail.push(req.body.name);
+    bankDetail.push(req.body.bloodBankName);
     bankDetail.push(req.body.emailId);
     bankDetail.push(hashedPassword);
     bankDetail.push(req.body.mobile);
@@ -94,7 +116,7 @@ function bankRegistration(req,res,hashedPassword) {
             );    
 
             //insert location in location table 
-            var sqlLocation = 'INSERT INTO location (pincode, city, state ,country) values (?)';
+            var sqlLocation = 'INSERT IGNORE INTO location (pincode, city, state ,country) values (?)';
             mysqlConnection.query(sqlLocation,[locationData],function (err, data) { 
                 if (err) throw err;
                 console.log("location data is inserted successfully "); 
@@ -110,6 +132,10 @@ function bankRegistration(req,res,hashedPassword) {
 
 
 function login(req, res){
+    //Validate the data 
+    const {error} = schema.validate(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
+
     var checkExistsQuery;
 
     switch(req.body.category) {
