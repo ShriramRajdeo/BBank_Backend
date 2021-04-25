@@ -140,10 +140,10 @@ function login(req, res){
 
     switch(req.body.category) {
         case 'user':
-          checkExistsQuery = "SELECT emailId,password from userData where emailId = ?";
+          checkExistsQuery = "SELECT emailId,password,userId from userData where emailId = ?";
           break;
         case 'bloodbank':
-          checkExistsQuery = "SELECT emailId,password from bloodbankdata where emailId = ?";
+          checkExistsQuery = "SELECT emailId,password,bankId from bloodbankdata where emailId = ?";
           break;
         case 'admin':
           // code block
@@ -161,10 +161,20 @@ function login(req, res){
             });
         }else{
             loginCredentials=rows[0];
+            var idFromDB
+            for(var myKey in loginCredentials) {
+                if (myKey=="emailId" ||myKey=="password") {
+                    continue
+                }
+                idFromDB = loginCredentials[myKey];
+             }
+
             bcrypt.compare(req.body.password, loginCredentials.password, function(err, result){
                 if(result){
                     const token = jwt.sign({
                         email: loginCredentials.emailId,
+                        id: idFromDB,
+                        
                     }, process.env.JWT_KEY, function(err, token){
                         res.status(200).json({
                             message: "Authentication successful!",
