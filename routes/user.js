@@ -10,6 +10,6 @@ router.get("/",checkAuth,function(req,res){
 
 router.get("/profile",checkAuth,userController.profile);
 
-router.get("/dashboard",checkAuth,userController.dashboard);
+router.get("/camp",checkAuth,userController.showCamp);
 
 module.exports = router;

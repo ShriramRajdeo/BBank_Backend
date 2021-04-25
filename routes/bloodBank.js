@@ -9,6 +9,8 @@ router.get("/",checkAuth,function(req,res){
 
 router.get("/profile",checkAuth,bankController.profile);
 
-router.get("/dashboard",checkAuth,bankController.dashboard);
+router.get("/camp",checkAuth,bankController.showCamp);
+
+router.post("/organizeCamp",checkAuth,bankController.organizeCamp);
 
 module.exports = router;
