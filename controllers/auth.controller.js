@@ -174,7 +174,6 @@ function login(req, res){
                     const token = jwt.sign({
                         email: loginCredentials.emailId,
                         id: idFromDB,
-                        
                     }, process.env.JWT_KEY, function(err, token){
                         res.status(200).json({
                             message: "Authentication successful!",

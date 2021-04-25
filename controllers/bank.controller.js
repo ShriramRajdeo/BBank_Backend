@@ -15,59 +15,62 @@ function profile(req, res){
     }); 
 }
 
-function showCamp(req, res){
-    var email = req.body.data.email
-    var selectIdQuery = "SELECT bankId from bloodBankData where emailId = ?";
-    mysqlConnection.query(selectIdQuery,[email],(err, rows, fields) => {
-        if (err) console.log(err)
-        var id = rows[0].bankId
-        var selectQuery = "SELECT * from campData where bankId = ?";
-        mysqlConnection.query(selectQuery,[id],(err, rows, fields) => {
-            if (err) console.log(err)
-            res.json(rows)
-        });
-
-    });
-}
-
-function organizeCamp(req, res){
+function storeStock(req, res){
     var bankId = req.body.data.id
+    let ts = Date.now();
+    let date_ob = new Date(ts);
+    let date = date_ob.getDate();
+    let month = date_ob.getMonth()+1;
+    let year = date_ob.getFullYear();
+    let hours = date_ob.getHours();
+    let minutes = date_ob.getMinutes();
+    var day = date_ob.toString().split(' ')[0];
 
-    var campDetail=[];
-    campDetail.push(bankId);
-    campDetail.push(req.body.name);
-    campDetail.push(req.body.email);
-    campDetail.push(req.body.mobile);
-    campDetail.push(req.body.fromDate);
-    campDetail.push(req.body.toDate);
-    campDetail.push(req.body.address);
-    campDetail.push(req.body.pincode);
-    campDetail.push(req.body.city);
-    campDetail.push(req.body.state);
-    campDetail.push(req.body.country);
+    var stockDetail=[];
+    stockDetail.push(bankId);
+    stockDetail.push(req.body['A+']);
+    stockDetail.push(req.body['A-']);
+    stockDetail.push(req.body['B+']);
+    stockDetail.push(req.body['B-']);
+    stockDetail.push(req.body['AB+']);
+    stockDetail.push(req.body['AB-']);
+    stockDetail.push(req.body['O+']);
+    stockDetail.push(req.body['O-']);
+    stockDetail.push(date + "-" + month + "-" +year+"  "+hours + ":" + minutes);
 
-    var checkExistsQuery = "SELECT * from campData where name = ? and fromDate = ? and toDate = ?";
-    mysqlConnection.query(checkExistsQuery,[req.body.name,req.body.fromDate,req.body.toDate],(err, rows, fields) => {
-        let campExist=false;
-        rows.length>0 ? campExist=true : campExist=false;
 
-        if(!campExist){
-            var insertQuery = 'INSERT INTO campData(bankId, name, emailId, mobile, fromDate, toDate, address , pincode, city, state, country) values (?)';
+    var checkExistsQuery = "SELECT * from stockData where bankId = ?";
+    mysqlConnection.query(checkExistsQuery,[bankId],(err, rows, fields) => {
+        let stockExist=false;
+        rows.length>0 ? stockExist=true : stockExist=false;
+
+        if(!stockExist){
+            var insertQuery = 'INSERT INTO stockData() values (?)';
             mysqlConnection.query(insertQuery,
-                    [campDetail], (err, rows, fields) => {
+                    [stockDetail], (err, rows, fields) => {
                     !err ? res.redirect("/") : console.log(err);
                 }
             );
-            console.log("Camp created successfully!");
+            console.log("Blood Stock stored successfully!");
         }else{
-            console.log("Camp already exists!");
+            console.log("Blood Stock already stored!");
             return res.redirect('/?error=' + encodeURIComponent('Camp already exists!')); 
         }
+    });
+}
+
+function getStockOfBank(req, res){
+    var id = req.body.data.id
+    var selectQuery = "SELECT * from stockData where bankId = ?";
+    mysqlConnection.query(selectQuery,[id],(err, rows, fields) => {
+        if (err) console.log(err)
+        res.json(rows[0])
     }); 
 }
 
+
 module.exports = {
     profile: profile,
-    organizeCamp: organizeCamp,
-    showCamp: showCamp
+    storeStock: storeStock,
+    getStockOfBank: getStockOfBank
 } 
