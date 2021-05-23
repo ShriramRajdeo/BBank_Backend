@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const userController = require('../controllers/user.controller');
 const campController = require('../controllers/camp.controller');
+const functionController = require('../controllers/bbAndStock.controller');
+
 const checkAuth = require('../middleware/check-auth');
 
 
@@ -10,12 +12,16 @@ router.get("/",checkAuth,function(req,res){
 });
 
 router.get("/profile",checkAuth,userController.profile);
+router.put("/updateProfile",checkAuth,userController.updateProfile);
 
-router.post("/request",checkAuth,userController.addRequest);
+router.post("/addRequest",checkAuth,userController.addRequest);
+router.get("/showRequest",checkAuth,userController.showRequest);
 router.get("/getStock",checkAuth,userController.getStock);
-
-
+router.get("/getAllBank",checkAuth,functionController.allBankDetails);
 router.get("/camp",checkAuth,campController.showCampsToUser);
+
+router.get("/count",checkAuth,functionController.getCounts);
+
 
 
 module.exports = router;

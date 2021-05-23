@@ -15,6 +15,15 @@ function profile(req, res){
     }); 
 }
 
+function updateProfile(req, res){
+    var email = req.body.data.email
+    var updateQuery = "update bloodbankdata set name=?, mobile=?, pincode=? where emailId = ?";
+    mysqlConnection.query(updateQuery,[req.body.name,req.body.mobile,req.body.pincode, email],(err, rows, fields) => {
+        if (err) console.log(err)
+        res.json(rows)
+    });
+}
+
 function storeStock(req, res){
     var bankId = req.body.data.id
     let ts = Date.now();
@@ -24,18 +33,17 @@ function storeStock(req, res){
     let year = date_ob.getFullYear();
     let hours = date_ob.getHours();
     let minutes = date_ob.getMinutes();
-    var day = date_ob.toString().split(' ')[0];
-
+ 
     var stockDetail=[];
     stockDetail.push(bankId);
-    stockDetail.push(req.body['A+']);
-    stockDetail.push(req.body['A-']);
-    stockDetail.push(req.body['B+']);
-    stockDetail.push(req.body['B-']);
-    stockDetail.push(req.body['AB+']);
-    stockDetail.push(req.body['AB-']);
-    stockDetail.push(req.body['O+']);
-    stockDetail.push(req.body['O-']);
+    stockDetail.push(req.body['Apos']);
+    stockDetail.push(req.body['Aneg']);
+    stockDetail.push(req.body['Bpos']);
+    stockDetail.push(req.body['Bneg']);
+    stockDetail.push(req.body['ABpos']);
+    stockDetail.push(req.body['ABneg']);
+    stockDetail.push(req.body['Opos']);
+    stockDetail.push(req.body['Oneg']);
     stockDetail.push(date + "-" + month + "-" +year+"  "+hours + ":" + minutes);
 
 
@@ -53,8 +61,12 @@ function storeStock(req, res){
             );
             console.log("Blood Stock stored successfully!");
         }else{
-            console.log("Blood Stock already stored!");
-            return res.redirect('/?error=' + encodeURIComponent('Camp already exists!')); 
+            var updateQuery = 'UPDATE stockData set Apos=? , Aneg=? , Bpos=? ,Bneg=? ,ABpos=? ,ABneg=? ,Opos=? ,Oneg=? ,LastUpdated=? where bankId = ?';
+            mysqlConnection.query(updateQuery,[stockDetail[1],stockDetail[2],stockDetail[3],stockDetail[4],stockDetail[5],stockDetail[6],stockDetail[7],stockDetail[8],stockDetail[9],bankId],(err, result, fields) => {
+                if (err) throw error;
+                    res.send(result);
+                });
+            console.log("Blood Stock updated successfully!");
         }
     });
 }
@@ -69,8 +81,22 @@ function getStockOfBank(req, res){
 }
 
 
+function bloodRequestFromUser(req, res){
+    var id = req.body.data.id
+    var selectQuery = "SELECT * from requestData where bankId = ?";
+    mysqlConnection.query(selectQuery,[id],(err, rows, fields) => {
+        if (err) console.log(err)
+        if(rows.length<=0){
+            console.log("No Request found")
+        }
+        res.json(rows)
+    }); 
+}
+
 module.exports = {
     profile: profile,
+    updateProfile: updateProfile,
     storeStock: storeStock,
-    getStockOfBank: getStockOfBank
-} 
+    getStockOfBank: getStockOfBank,
+    bloodRequestFromUser: bloodRequestFromUser
+}
