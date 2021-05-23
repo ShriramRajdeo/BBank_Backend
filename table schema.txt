@@ -1,0 +1,97 @@
+in similar situation , in much the same way that architect kn produce a
+
+create database bbank_database;
+use bbank_database;
+
+CREATE TABLE IF NOT EXISTS location(
+    pincode varchar(6) NOT NULL UNIQUE,
+    city varchar(30) NOT NULL,
+    state varchar(30) NOT NULL,
+    country varchar(30) NOT NULL,
+PRIMARY KEY (pincode)
+);
+
+
+CREATE TABLE IF NOT EXISTS userData(
+    userId int NOT NULL AUTO_INCREMENT,
+    name varchar(40) NOT NULL,
+    emailId varchar(40) NOT NULL,
+    password varchar(100) NOT NULL,
+    mobile varchar(10) NOT NULL,
+    dob varchar(10) NOT NULL,
+    gender varchar(15) NOT NULL,
+    bloodGr varchar(15) NOT NULL,
+    pincode varchar(6) NOT NULL,
+    PRIMARY KEY (userId),
+FOREIGN KEY (pincode) REFERENCES location(pincode)
+);
+
+
+
+
+CREATE TABLE IF NOT EXISTS bloodBankData(
+    bankId int NOT NULL AUTO_INCREMENT,
+    name varchar(40) NOT NULL,
+    emailId varchar(40) NOT NULL,
+    password varchar(100) NOT NULL,
+    mobile varchar(10) NOT NULL,
+    pincode varchar(6) NOT NULL,
+    PRIMARY KEY (bankId),
+FOREIGN KEY (pincode) REFERENCES location(pincode)
+);
+
+
+
+CREATE TABLE IF NOT EXISTS campData(
+    campId int NOT NULL AUTO_INCREMENT,
+    bankId int NOT NULL,
+    name varchar(40) NOT NULL,
+    emailId varchar(40) NOT NULL,
+    mobile varchar(10) NOT NULL,
+    fromDate varchar(10) NOT NULL,
+    toDate varchar(10) NOT NULL,
+    address varchar(20) NOT NULL,
+    pincode varchar(6) NOT NULL,
+    city varchar(30) NOT NULL,
+    state varchar(30) NOT NULL,
+    country varchar(30) NOT NULL,
+    PRIMARY KEY (campId),
+FOREIGN KEY (bankId) REFERENCES bloodBankData(bankId)
+);
+
+
+CREATE TABLE IF NOT EXISTS requestData(
+    requestId int NOT NULL AUTO_INCREMENT,
+    bankId int NOT NULL,
+    userId int NOT NULL,
+    bloodGr varchar(15) NOT NULL,
+    amount int NOT NULL,
+    date varchar(10) NOT NULL,
+    time varchar(20) NOT NULL,
+    status varchar(20) NOT NULL,
+    PRIMARY KEY (requestId),
+    FOREIGN KEY (bankId) REFERENCES bloodBankData(bankId),
+    FOREIGN KEY (userId) REFERENCES userData(userId)
+);
+
+
+CREATE TABLE IF NOT EXISTS stockData(
+    bankId int NOT NULL,
+    Apos int NOT NULL,
+    Aneg int NOT NULL,
+    Bpos int NOT NULL,
+    Bneg int NOT NULL,
+    ABpos int NOT NULL,
+    ABneg int NOT NULL,
+    Opos int NOT NULL,
+    Oneg int NOT NULL,
+    LastUpdated varchar(30),
+    PRIMARY KEY (bankId),
+    FOREIGN KEY (bankId) REFERENCES bloodBankData(bankId)
+);
+
+
+
+SELECT bloodbankdata.name, bloodbankdata.emailId, bloodbankdata.mobile , bloodbankdata.pincode, stockdata.*
+FROM stockdata
+INNER JOIN bloodbankdata ON bloodbankdata.bankId=stockdata.bankId;
