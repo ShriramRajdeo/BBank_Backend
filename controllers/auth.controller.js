@@ -136,6 +136,7 @@ function bankRegistration(req,res,hashedPassword) {
 function login(req, res){
     //Validate the data
     const {error} = schema.validate(req.body);
+    console.log(error);
     if (error) return res.status(400).send(error.details[0].message);
 
     var checkExistsQuery;
@@ -182,6 +183,7 @@ function login(req, res){
                             token: token
                         });
                     });
+                    console.log('done login');
                 }else{
                     res.status(401).json({
                         message: "Invalid credentials!",
