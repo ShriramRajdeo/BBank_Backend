@@ -8,7 +8,7 @@ const checkAuth = require('../middleware/check-auth');
 
 
 router.get("/",checkAuth,function(req,res){
-    res.send("In user");    
+    res.send("In user");
 });
 
 router.get("/profile",checkAuth,userController.profile);
@@ -18,7 +18,7 @@ router.post("/addRequest",checkAuth,userController.addRequest);
 router.get("/showRequest",checkAuth,userController.showRequest);
 router.get("/getStock",checkAuth,userController.getStock);
 router.get("/getAllBank",checkAuth,functionController.allBankDetails);
-router.get("/camp",checkAuth,campController.showCampsToUser);
+router.get("/getCamp",checkAuth,campController.showCampsToUser);
 
 router.get("/count",checkAuth,functionController.getCounts);
 

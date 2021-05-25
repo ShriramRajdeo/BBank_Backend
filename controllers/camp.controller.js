@@ -23,9 +23,9 @@ function showCampByBank(req, res){
 function showCampsToUser(req, res){
     var selectQuery = "SELECT * from campData";
     mysqlConnection.query(selectQuery,(err, rows, fields) => {
-        if (err) console.log(err)
-        res.json(rows)
-    }); 
+        if (err) res.status(400).send({message:err})
+        res.send(200).json(rows);
+    });
 }
 
 function organizeCamp(req, res){
@@ -53,13 +53,15 @@ function organizeCamp(req, res){
             var insertQuery = 'INSERT INTO campData(bankId, name, emailId, mobile, fromDate, toDate, address , pincode, city, state, country) values (?)';
             mysqlConnection.query(insertQuery,
                     [campDetail], (err, rows, fields) => {
-                    !err ? res.redirect("/") : console.log(err);
+                    !err
+						? res.status(200).send({ message: "registerd successfully" })
+						: res.status(400).send({ message: err });
                 }
             );
             console.log("Camp created successfully!");
         }else{
             console.log("Camp already exists!");
-            return res.redirect('/?error=' + encodeURIComponent('Camp already exists!')); 
+            return res.status(400).send({message:'Camp already exists!'});
         }
     });
 }
@@ -68,4 +70,4 @@ module.exports = {
     organizeCamp: organizeCamp,
     showCampByBank: showCampByBank,
     showCampsToUser: showCampsToUser
-} 
+}
