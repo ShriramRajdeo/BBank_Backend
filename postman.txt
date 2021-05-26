@@ -1,0 +1,74 @@
+user
+{
+    "category":"user",
+    "userName":"shriram",
+    "emailId":"rajdeo@gmail.com",
+    "password":"123455",
+    "mobile":"8007751842",
+    "dateofbirth":"1999/08/23",
+    "gender":"male",
+    "bloodGr":"Opos",
+    "pincode":"414105",
+    "city":"Pune",
+    "state":"Maharashtra",
+    "country":"India"
+}
+
+
+bank
+
+{
+    "category":"bloodbank",
+    "bloodBankName":"Raj blood bank",
+    "emailId":"raj@gmail.com",
+    "password":"123456",
+    "mobile":"8007751842",
+    "pincode":"414105",
+    "city":"Pune",
+    "state":"Maharashtra",
+    "country":"India"
+}{
+    "category":"bloodbank",
+    "bloodBankName":"shree blood bank",
+    "emailId":"shree@gmail.com",
+    "password":"123456",
+    "mobile":"1234567890",
+    "pincode":"414105",
+    "city":"Pune",
+    "state":"Maharashtra",
+    "country":"India"
+}
+camp
+{
+    "name":"bloodbank",
+    "emailId":"raj@gmail.com",
+    "mobile":"8007751842",
+    "fromDate":"2021/04/10",
+    "toDate":"2021/04/30",
+    "address":"wadia college campus",
+    "pincode":"414105",
+    "city":"Pune",
+    "state":"Maharashtra",
+    "country":"India"
+}
+
+request [from user]
+{
+    "bankId":1,
+    "bloodGr":"Opos",
+    "amount":1
+}
+
+store stock
+{
+    "Apos":20,
+    "Aneg":20,
+    "Bpos":20,
+    "Bneg":20,
+    "ABpos":20,
+    "ABneg":20,
+    "Opos":20,
+    "Oneg":20
+}
+
+
