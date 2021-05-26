@@ -24,7 +24,7 @@ function showCampsToUser(req, res){
     var selectQuery = "SELECT * from campData";
     mysqlConnection.query(selectQuery,(err, rows, fields) => {
         if (err) res.status(400).send({message:err})
-        res.send(200).json(rows);
+        res.status(200).send(rows);
     });
 }
 
