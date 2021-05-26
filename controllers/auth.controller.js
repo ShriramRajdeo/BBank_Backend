@@ -7,10 +7,10 @@ const joi = require("@hapi/joi");    // For Validation
 
 const schema = joi.object({
     category: joi.string().min(3).max(10).required(),
-    userName: joi.string().min(6).max(40),
-    bloodBankName: joi.string().min(6).max(40),
+    userName: joi.string().min(2).max(40),
+    bloodBankName: joi.string().min(2).max(40),
     emailId: joi.string().min(6).max(40).required().email(),
-    password: joi.string().min(6).max(10).required(),
+    password: joi.string().min(6).required(),
     mobile: joi.string().regex(/^[0-9]{10}$/).messages({'string.pattern.base': 'Phone number must have 10 digits.'}),
     dateofbirth: joi.date().raw(),
     gender: joi.string(),
@@ -23,25 +23,26 @@ const schema = joi.object({
 
 
 async function signUp(req, res){
-    //Validate the data 
+    //Validate the data
     const {error} = schema.validate(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
+    if (error) return res.status(400).send({message:error.details[0].message});
 
     //salting
     const salt = await bcrypt.genSaltSync(10);
     const hashedPassword = await bcrypt.hashSync(req.body.password, salt);
-    
+
     switch(req.body.category) {
         case 'user':
           userRegistration(req,res,hashedPassword);
           break;
-        case 'bloodbank':
+        case 'bbank':
           bankRegistration(req,res,hashedPassword);
           break;
         case 'admin':
           // code block
           break;
-      }   
+      }
+       console.log("Done");
 }
 
 function userRegistration(req,res,hashedPassword){
@@ -67,26 +68,27 @@ function userRegistration(req,res,hashedPassword){
         rows.length>0 ? emailExist=true : emailExist=false;
 
         if(!emailExist){
+
+            //  insert location in location table
+            var sqlLocation = "INSERT IGNORE INTO location (pincode, city, state ,country) values (?)";
+            mysqlConnection.query(sqlLocation,[locationData],function (err, data) {
+                if (err) res.status(400).send({ message: err });
+                console.log("location data is inserted successfully");
+            });
+
             var insertQuery = 'INSERT INTO userdata (name, emailId, password ,mobile, dob, gender, bloodGr , pincode) values (?)';
             mysqlConnection.query(insertQuery,
                     [userDetail], (err, rows, fields) => {
-                    !err ? res.redirect("/") : console.log(err);
+                    !err
+						? res.status(200).send({ message: "signup succesfully" })
+						: res.status(400).send({ message: err });
                 }
-            );    
-
-            //  insert location in location table  
-            var sqlLocation = "INSERT IGNORE INTO location (pincode, city, state ,country) values (?)";
-            mysqlConnection.query(sqlLocation,[locationData],function (err, data) { 
-                if (err) throw err;
-                console.log("location data is inserted successfully"); 
-            });
-
+            );
         }else{
-            console.log("Email already exists!");
-            return res.redirect('/?error=' + encodeURIComponent('Email already exists!')); 
+            return res.status(401).send({message:'Email already exists!'});
         }
 
-    }); 
+    });
 }
 
 function bankRegistration(req,res,hashedPassword) {
@@ -109,54 +111,57 @@ function bankRegistration(req,res,hashedPassword) {
         rows.length>0 ? emailExist=true : emailExist=false;
 
         if(!emailExist){
-            var sql = 'INSERT INTO bloodBankData (name, emailId, password ,mobile, pincode) values (?)';
-            mysqlConnection.query(sql,[bankDetail], (err, rows, fields) => {
-                    !err ? res.redirect("/") : console.log(err);
-                }
-            );    
 
-            //insert location in location table 
+            //insert location in location table
             var sqlLocation = 'INSERT IGNORE INTO location (pincode, city, state ,country) values (?)';
-            mysqlConnection.query(sqlLocation,[locationData],function (err, data) { 
-                if (err) throw err;
-                console.log("location data is inserted successfully "); 
+            mysqlConnection.query(sqlLocation,[locationData],function (err, data) {
+                if (err) res.status(400).send({ message: err });;
+                console.log("location data is inserted successfully ");
             });
 
+            var sql = 'INSERT INTO bloodBankData (name, emailId, password ,mobile, pincode) values (?)';
+            mysqlConnection.query(sql,[bankDetail], (err, rows, fields) => {
+                    !err ? res.status(200).send({message:"registerd successfully"}) : res.status(400).send({ message: err });
+                }
+            );
             console.log("Registration Successful");
+        
         }else{
             console.log("Email already exists!");
-            return res.redirect('/?error=' + encodeURIComponent('Email already exists!'));
+            return res.status(401).redirect('/?error=' + encodeURIComponent('Email already exists!'));
         }
-    }); 
+    });
 }
 
 
 function login(req, res){
-    //Validate the data 
+    //Validate the data
     const {error} = schema.validate(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
+    console.log(error);
+
+    if (error) return res.status(400).send({ message: error.details[0].message });
 
     var checkExistsQuery;
-
+    console.log(req.body.category + "   " + req.body.emailId + "   " + req.body.password);
     switch(req.body.category) {
         case 'user':
           checkExistsQuery = "SELECT emailId,password,userId from userData where emailId = ?";
           break;
-        case 'bloodbank':
+        case 'bbank':
           checkExistsQuery = "SELECT emailId,password,bankId from bloodbankdata where emailId = ?";
           break;
         case 'admin':
           // code block
           break;
-      } 
-    
+      }
+
     mysqlConnection.query(checkExistsQuery,[req.body.emailId],(err, rows, fields) => {
         let loginCredentials={};
         let emailExist=false;
         rows.length>0 ? emailExist=true : emailExist=false;
-        
+
         if(!emailExist){
-            res.status(401).json({
+            res.status(401).send({
                 message: "Invalid credentials!",
             });
         }else{
@@ -167,7 +172,7 @@ function login(req, res){
                     continue
                 }
                 idFromDB = loginCredentials[myKey];
-            }
+             }
 
             bcrypt.compare(req.body.password, loginCredentials.password, function(err, result){
                 if(result){
@@ -175,11 +180,12 @@ function login(req, res){
                         email: loginCredentials.emailId,
                         id: idFromDB,
                     }, process.env.JWT_KEY, function(err, token){
-                        res.status(200).json({
+                        res.status(200).send({
                             message: "Authentication successful!",
                             token: token
                         });
                     });
+                    console.log('done login');
                 }else{
                     res.status(401).json({
                         message: "Invalid credentials!",
@@ -187,11 +193,11 @@ function login(req, res){
                 }
             });
         }
-    });  
+    });
 }
 
 
 module.exports = {
     signUp: signUp,
     login: login
-} 
+}

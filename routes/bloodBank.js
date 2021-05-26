@@ -16,6 +16,7 @@ router.post("/storeStock",checkAuth,bankController.storeStock);
 router.put("/updateStock",checkAuth,bankController.storeStock);
 router.get("/getStockOfBank",checkAuth,bankController.getStockOfBank);
 router.get("/getRequestsFromUser",checkAuth,bankController.bloodRequestFromUser);
+router.post("/validateBloodRequest",checkAuth,bankController.validateBloodRequest);
 
 router.get("/getAllBank",checkAuth,functionController.allBankDetails);
 

@@ -9,8 +9,8 @@ function profile(req, res){
     var email = req.body.data.email
     var selectQuery = "SELECT userId , name, emailId, mobile,dob, gender, bloodGr, pincode from userdata where emailId = ?";
     mysqlConnection.query(selectQuery,[email],(err, rows, fields) => {
-        if (err) console.log(err)
-        res.json(rows)
+        if (err) res.status(400).send({ message: err });
+        res.status(200).send(rows[0])
     });
 }
 
@@ -18,8 +18,13 @@ function updateProfile(req, res){
     var email = req.body.data.email
     var insertQuery = "update userdata set name=?, mobile=?,dob=?, gender=?, bloodGr=?, pincode=? where emailId = ?";
     mysqlConnection.query(insertQuery,[req.body.name,req.body.mobile,req.body.dob,req.body.gender,req.body.bloodGr,req.body.pincode, email],(err, rows, fields) => {
-        if (err) console.log(err)
-        res.json(rows)
+        if (err) res.status(400).send({ message: err });
+    });
+
+    var selectQuery = "SELECT userId , name, emailId, mobile,dob, gender, bloodGr, pincode from userdata where emailId = ?";
+    mysqlConnection.query(selectQuery,[email],(err, rows, fields) => {
+        if (err) res.status(400).send({ message: err });
+        res.status(200).send(rows[0])
     });
 }
 
@@ -27,8 +32,8 @@ function updateProfile(req, res){
 function getStock(req, res){
     var selectQuery = "SELECT bloodbankdata.name, bloodbankdata.emailId, bloodbankdata.mobile , bloodbankdata.pincode, stockdata.* FROM stockdata INNER JOIN bloodbankdata ON bloodbankdata.bankId=stockdata.bankId";
     mysqlConnection.query(selectQuery,(err, rows, fields) => {
-        if (err) console.log(err)
-        res.json(rows)
+        if (err) res.status(400).send({ message: err });
+        res.status(200).send(rows)
     });
 }
 
@@ -59,7 +64,7 @@ function addRequest(req, res){
 
         if(requestExist){
             console.log("Request already exists , You can only do one request per day!");
-            return res.redirect('/?error=' + encodeURIComponent('request already exists , You can only do one request per day!')); 
+            return res.status(400).send({message: 'request already exists , You can only do one request per day!'});
         }
         else{  
             var stockExistsQuery = "SELECT * from stockData where bankId = ?";
@@ -76,16 +81,17 @@ function addRequest(req, res){
                         var insertQuery = 'INSERT INTO requestData(bankId,userId,bloodGr,amount,date,time,status) values (?)';
                         mysqlConnection.query(insertQuery,
                             [requestDetails], (err, rows, fields) => {
-                            !err ? res.redirect("/") : console.log(err);
+                            !err ? res.status(200).send({ message: "Request Sent succesfully" })
+                                 : res.status(400).send({message: err});;
                         });
         
                         console.log("Request sent successfully!");
                     }else{
-                        return res.redirect('/?error=' + encodeURIComponent('Stock is not available!'));
+                        return res.status(400).send({message:'Stock is not available!'});
                     }     
                 }else{
                     console.log("Stock doesn't exists!");
-                    return res.redirect('/?error=' + encodeURIComponent('Stock is not available!')); 
+                    return res.status(400).send({message:'Stock is not available!'});
                 }
             });
         }
@@ -96,11 +102,11 @@ function showRequest(req,res) {
     var id = req.body.data.id
     var selectQuery = "SELECT * from requestData where userId = ?";
     mysqlConnection.query(selectQuery,[id],(err, rows, fields) => {
-        if (err) console.log(err)
+        if (err) res.status(400).send({message: err});
         if(rows.length<=0){
-            console.log("No Request found")
+            res.status(200).send({message:'Requests not available!'});
         }
-        res.json(rows)
+        res.status(200).send(rows)
     }); 
 }
 

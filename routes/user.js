@@ -22,6 +22,4 @@ router.get("/getCamp",checkAuth,campController.showCampsToUser);
 
 router.get("/count",checkAuth,functionController.getCounts);
 
-
-
 module.exports = router;

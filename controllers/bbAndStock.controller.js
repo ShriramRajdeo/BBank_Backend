@@ -8,11 +8,11 @@ const e = require('express');
 function allBankDetails(req, res){
     var selectQuery = "SELECT bankId ,name , emailId,mobile,pincode from Bloodbankdata";
     mysqlConnection.query(selectQuery,(err, rows, fields) => {
-        if (err) console.log(err)
+        if (err) res.status(400).send({ message: err });
         if(rows.length<=0){
-            console.log("No Request found")
+            res.status(204).send({ message: "Blood Banks not available" })
         }
-        res.send(rows)
+        res.status(200).send(rows[0]);
     });
 }
 
@@ -20,11 +20,11 @@ function allBankDetails(req, res){
 function getCounts(req, res){
     var selectQuery = "SELECT COUNT(*) FROM userdata UNION SELECT COUNT(*) FROM bloodbankdata UNION SELECT COUNT(*) FROM campdata WHERE CURDATE() between fromDate and toDate";
     mysqlConnection.query(selectQuery,(err, rows, fields) => {
-        if (err) console.log(err)
+        if (err) res.status(400).send({ message: err });
         if(rows.length<=0){
-            console.log("No Request found")
+            res.status(204).send({ message: "Data not available" })
         }
-        res.send(rows)
+        res.status(200).send(rows[0]);
     });
 }
 

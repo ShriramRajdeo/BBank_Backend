@@ -10,12 +10,12 @@ function showCampByBank(req, res){
     var email = req.body.data.email
     var selectIdQuery = "SELECT bankId from bloodBankData where emailId = ?";
     mysqlConnection.query(selectIdQuery,[email],(err, rows, fields) => {
-        if (err) console.log(err)
+        if (err) res.status(400).send({ message: err });
         var id = rows[0].bankId
         var selectQuery = "SELECT * from campData where bankId = ?";
         mysqlConnection.query(selectQuery,[id],(err, rows, fields) => {
-            if (err) console.log(err)
-            res.json(rows)
+            if (err) res.status(400).send({ message: err });
+            res.status(200).send(rows)
         });
     });
 }
