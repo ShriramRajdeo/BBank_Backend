@@ -167,7 +167,7 @@ function login(req, res){
                     continue
                 }
                 idFromDB = loginCredentials[myKey];
-             }
+            }
 
             bcrypt.compare(req.body.password, loginCredentials.password, function(err, result){
                 if(result){
