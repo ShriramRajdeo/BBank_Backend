@@ -16,9 +16,10 @@ const schema = joi.object({
     gender: joi.string(),
     bloodGr: joi.string(),
     pincode: joi.string().max(6),
-    city: joi.string().max(30),
-    state: joi.string().max(30),
-    country: joi.string().max(30)
+    address: joi.string().max(20),
+    city: joi.string().max(20),
+    state: joi.string().max(20),
+    country: joi.string().max(20)
 });
 
 
@@ -55,12 +56,10 @@ function userRegistration(req,res,hashedPassword){
     userDetail.push(req.body.gender);
     userDetail.push(req.body.bloodGr);
     userDetail.push(req.body.pincode);
-
-    var locationData=[];
-    locationData.push(req.body.pincode);
-    locationData.push(req.body.city);
-    locationData.push(req.body.state);
-    locationData.push(req.body.country);
+    userDetail.push(req.body.address);
+    userDetail.push(req.body.city);
+    userDetail.push(req.body.state);
+    userDetail.push(req.body.country);
 
     var checkExistsQuery = "SELECT * from userdata where emailId = ?";
     mysqlConnection.query(checkExistsQuery,[req.body.emailId],(err, rows, fields) => {
@@ -68,15 +67,7 @@ function userRegistration(req,res,hashedPassword){
         rows.length>0 ? emailExist=true : emailExist=false;
 
         if(!emailExist){
-
-            //  insert location in location table
-            var sqlLocation = "INSERT IGNORE INTO location (pincode, city, state ,country) values (?)";
-            mysqlConnection.query(sqlLocation,[locationData],function (err, data) {
-                if (err) res.status(400).send({ message: err });
-                console.log("location data is inserted successfully");
-            });
-
-            var insertQuery = 'INSERT INTO userdata (name, emailId, password ,mobile, dob, gender, bloodGr , pincode) values (?)';
+            var insertQuery = 'INSERT INTO userdata (name, emailId, password ,mobile, dob, gender, bloodGr , pincode, address, city, state ,country) values (?)';
             mysqlConnection.query(insertQuery,
                     [userDetail], (err, rows, fields) => {
                     !err
@@ -98,12 +89,10 @@ function bankRegistration(req,res,hashedPassword) {
     bankDetail.push(hashedPassword);
     bankDetail.push(req.body.mobile);
     bankDetail.push(req.body.pincode);
-
-    var locationData=[];
-    locationData.push(req.body.pincode);
-    locationData.push(req.body.city);
-    locationData.push(req.body.state);
-    locationData.push(req.body.country);
+    bankDetail.push(req.body.address);
+    bankDetail.push(req.body.city);
+    bankDetail.push(req.body.state);
+    bankDetail.push(req.body.country);
 
     var checkExistsQuery = "SELECT * from bloodBankData where emailId = ?";
     mysqlConnection.query(checkExistsQuery,[req.body.emailId],(err, rows, fields) => {
@@ -111,15 +100,7 @@ function bankRegistration(req,res,hashedPassword) {
         rows.length>0 ? emailExist=true : emailExist=false;
 
         if(!emailExist){
-
-            //insert location in location table
-            var sqlLocation = 'INSERT IGNORE INTO location (pincode, city, state ,country) values (?)';
-            mysqlConnection.query(sqlLocation,[locationData],function (err, data) {
-                if (err) res.status(400).send({ message: err });;
-                console.log("location data is inserted successfully ");
-            });
-
-            var sql = 'INSERT INTO bloodBankData (name, emailId, password ,mobile, pincode) values (?)';
+            var sql = 'INSERT INTO bloodBankData (name, emailId, password ,mobile, pincode, address, city, state ,country) values (?)';
             mysqlConnection.query(sql,[bankDetail], (err, rows, fields) => {
                     !err ? res.status(200).send({message:"registerd successfully"}) : res.status(400).send({ message: err });
                 }

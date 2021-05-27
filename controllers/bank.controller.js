@@ -106,7 +106,6 @@ function validateBloodRequest(req, res){
     var userId = req.body.userId
     var bloodGr = req.body.bloodGr
     var amount = req.body.amount
-    
 
     let ts = Date.now();
     let date_ob = new Date(ts);
