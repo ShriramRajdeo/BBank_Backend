@@ -12,7 +12,7 @@ function allBankDetails(req, res){
         if(rows.length<=0){
             res.status(204).send({ message: "Blood Banks not available" })
         }
-        res.status(200).send(rows[0]);
+        res.status(200).send(rows);
     });
 }
 

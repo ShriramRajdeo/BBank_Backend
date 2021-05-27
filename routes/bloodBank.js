@@ -18,7 +18,7 @@ router.get("/getStockOfBank",checkAuth,bankController.getStockOfBank);
 router.get("/getRequestsFromUser",checkAuth,bankController.bloodRequestFromUser);
 router.post("/validateBloodRequest",checkAuth,bankController.validateBloodRequest);
 
-router.get("/getAllBank",checkAuth,functionController.allBankDetails);
+router.get("/getBloodBanks",checkAuth,functionController.allBankDetails);
 
 router.get("/camp",checkAuth,campController.showCampByBank);
 router.post("/organizeCamp",checkAuth,campController.organizeCamp);
