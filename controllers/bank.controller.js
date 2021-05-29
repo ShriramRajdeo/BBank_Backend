@@ -30,7 +30,7 @@ function updateProfile(req, res){
     
 }
 
-function storeStock(req, res){
+function updateStock(req, res){
     var bankId = req.body.data.id
     let ts = Date.now();
     let date_ob = new Date(ts);
@@ -66,6 +66,7 @@ function storeStock(req, res){
                          : res.status(400).send({ message: err });
                 }
             );
+            
             console.log("Blood Stock stored successfully!");
         }else{
             var updateQuery = 'UPDATE stockData set Apos=? , Aneg=? , Bpos=? ,Bneg=? ,ABpos=? ,ABneg=? ,Opos=? ,Oneg=? ,LastUpdated=? where bankId = ?';
@@ -157,11 +158,10 @@ function validateBloodRequest(req, res){
 }
 
 
-
 module.exports = {
     profile: profile,
     updateProfile: updateProfile,
-    storeStock: storeStock,
+    updateStock: updateStock,
     getStockOfBank: getStockOfBank,
     bloodRequestFromUser: bloodRequestFromUser,
     validateBloodRequest: validateBloodRequest

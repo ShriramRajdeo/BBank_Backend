@@ -1,5 +1,5 @@
-CREATE database bbank_database
-USE bbank_database
+CREATE database bbank_database;
+USE bbank_database;
 
 CREATE TABLE IF NOT EXISTS userData(  
     userId int NOT NULL AUTO_INCREMENT,  

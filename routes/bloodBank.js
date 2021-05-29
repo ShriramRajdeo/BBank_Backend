@@ -11,9 +11,9 @@ router.get("/",checkAuth,function(req,res){
 
 router.get("/profile",checkAuth,bankController.profile);
 router.put("/updateProfile",checkAuth,bankController.updateProfile);
+router.get("/count",checkAuth,functionController.getCounts);
 
-router.post("/storeStock",checkAuth,bankController.storeStock);
-router.put("/updateStock",checkAuth,bankController.storeStock);
+router.put("/updateStock",checkAuth,bankController.updateStock);
 router.get("/getStockOfBank",checkAuth,bankController.getStockOfBank);
 router.get("/getRequestsFromUser",checkAuth,bankController.bloodRequestFromUser);
 router.post("/validateBloodRequest",checkAuth,bankController.validateBloodRequest);

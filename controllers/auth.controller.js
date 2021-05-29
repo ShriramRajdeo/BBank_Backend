@@ -102,11 +102,12 @@ function bankRegistration(req,res,hashedPassword) {
         if(!emailExist){
             var sql = 'INSERT INTO bloodBankData (name, emailId, password ,mobile, pincode, address, city, state ,country) values (?)';
             mysqlConnection.query(sql,[bankDetail], (err, rows, fields) => {
-                    !err ? res.status(200).send({message:"registerd successfully"}) : res.status(400).send({ message: err });
+                    !err ?  console.log("data stored"): res.status(400).send({ message: err });
                 }
             );
+
+            setStock(req, res);
             console.log("Registration Successful");
-        
         }else{
             console.log("Email already exists!");
             return res.status(401).redirect('/?error=' + encodeURIComponent('Email already exists!'));
@@ -114,6 +115,35 @@ function bankRegistration(req,res,hashedPassword) {
     });
 }
 
+function setStock(req,res) {
+    console.log("in setstock!");
+    let email=req.body.emailId;
+
+    var getIdQuery = "SELECT bankId from bloodbankData where emailId = ?";
+    mysqlConnection.query(getIdQuery,[email],(err, rows, fields) => {
+        let bankId =rows[0].bankId;
+        let stockdata=[]
+        stockdata.push(bankId);
+        stockdata.push(0);
+        stockdata.push(0);
+        stockdata.push(0);
+        stockdata.push(0);
+        stockdata.push(0);
+        stockdata.push(0);
+        stockdata.push(0);
+        stockdata.push(0);
+        stockdata.push('null');
+
+        var insertQuery = 'INSERT INTO stockData () values (?)';
+        mysqlConnection.query(insertQuery,
+                [stockdata], (err, rows, fields) => {
+                !err ? res.status(200).send({ message: "Inserted succesfully" })
+                        : res.status(400).send({ message: err });
+            }
+        );
+    });
+
+}
 
 function login(req, res){
     //Validate the data
