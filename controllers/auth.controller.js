@@ -178,7 +178,15 @@ function login(req, res){
 }
 
 
+// LOGOUT
+function logout(req, res){
+    res.clearCookie('nToken');
+    console.log('done loout');
+    return res.redirect('/');
+}
+
 module.exports = {
     signUp: signUp,
-    login: login
+    login: login,
+    logout: logout
 }

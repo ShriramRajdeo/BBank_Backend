@@ -7,16 +7,11 @@ const e = require('express');
 
 
 function showCampByBank(req, res){
-    var email = req.body.data.email
-    var selectIdQuery = "SELECT bankId from bloodBankData where emailId = ?";
-    mysqlConnection.query(selectIdQuery,[email],(err, rows, fields) => {
+    var id = req.body.data.id 
+    var selectQuery = "SELECT * from campData where bankId = ?";
+    mysqlConnection.query(selectQuery,[id],(err, rows, fields) => {
         if (err) res.status(400).send({ message: err });
-        var id = rows[0].bankId
-        var selectQuery = "SELECT * from campData where bankId = ?";
-        mysqlConnection.query(selectQuery,[id],(err, rows, fields) => {
-            if (err) res.status(400).send({ message: err });
-            res.status(200).send(rows)
-        });
+        res.status(200).send(rows)
     });
 }
 
@@ -28,9 +23,57 @@ function showCampsToUser(req, res){
     });
 }
 
+function registerToCamp(req,res) {
+    let campId = req.body.campId
+    let userId = req.body.data.id
+    data=[]
+    data.push(campId)
+    data.push(userId)
+  
+    var checkExistsQuery = "SELECT * from registerData where campId = ? and userId = ?";
+    mysqlConnection.query(checkExistsQuery,[data[0],data[1]],(err, rows, fields) => {
+        let exist=false;
+        rows.length>0 ? exist=true : exist=false;
+        if(!exist){
+            var insertQuery = 'INSERT INTO registerData(campId, userId) values (?)';
+            mysqlConnection.query(insertQuery,
+                    [data], (err, rows, fields) => {
+                    !err
+                        ? res.status(200).send({ message: "registerd successfully" })
+                        : res.status(400).send({ message: err });
+                }
+            );    
+        }
+        else{
+            res.status(200).send({ message: "Already Registerd" })
+        }
+    });
+    
+}
+
+function showRegistrationForCamp(req, res){
+    let campId = req.body.campId
+
+    var selectQuery = 'SELECT campData.name,userData.name, userData.emailId, userData.mobile FROM ((campData INNER JOIN registerData ON campData.campID = registerData.campID) INNER JOIN userData ON userData.userId=registerData.userId and registerData.campId= ?)';
+    mysqlConnection.query(selectQuery,campId,(err, rows, fields) => {
+        if (err) res.status(400).send({message:err})
+        res.status(200).send(rows);
+    });
+}
+
+function showRegisteredCamp(req, res){
+    let userId = req.body.data.id
+
+    var selectQuery = 'SELECT campData.name,campData.emailId,campData.mobile,campData.fromDate,campData.toDate,campData.address,campData.pincode,campData.city,campData.country FROM campData INNER JOIN registerData ON campData.campID = registerData.campID and registerData.userId= ?';
+    mysqlConnection.query(selectQuery,userId,(err, rows, fields) => {
+        if (err) res.status(400).send({message:err})
+        res.status(200).send(rows);
+    });
+}
+
+
 function organizeCamp(req, res){
     var bankId = req.body.data.id
-
     var campDetail=[];
     campDetail.push(bankId);
     campDetail.push(req.body.name);
@@ -66,8 +109,12 @@ function organizeCamp(req, res){
     });
 }
 
+
 module.exports = {
     organizeCamp: organizeCamp,
     showCampByBank: showCampByBank,
-    showCampsToUser: showCampsToUser
+    showCampsToUser: showCampsToUser,  
+    registerToCamp: registerToCamp,
+    showRegistrationForCamp:showRegistrationForCamp,
+    showRegisteredCamp: showRegisteredCamp
 }

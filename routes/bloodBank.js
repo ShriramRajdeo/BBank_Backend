@@ -17,10 +17,10 @@ router.put("/updateStock",checkAuth,bankController.storeStock);
 router.get("/getStockOfBank",checkAuth,bankController.getStockOfBank);
 router.get("/getRequestsFromUser",checkAuth,bankController.bloodRequestFromUser);
 router.post("/validateBloodRequest",checkAuth,bankController.validateBloodRequest);
-
 router.get("/getBloodBanks",checkAuth,functionController.allBankDetails);
 
-router.get("/camp",checkAuth,campController.showCampByBank);
+router.get("/getCamp",checkAuth,campController.showCampByBank);
+router.post("/showRegistrationForCamp",checkAuth,campController.showRegistrationForCamp);
 router.post("/organizeCamp",checkAuth,campController.organizeCamp);
 
 module.exports = router;

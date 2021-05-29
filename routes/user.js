@@ -20,6 +20,9 @@ router.get("/getStock",checkAuth,userController.getStock);
 router.get("/getBloodBanks",checkAuth,functionController.allBankDetails);
 router.get("/getCamp",checkAuth,campController.showCampsToUser);
 
+router.post("/registerToCamp",checkAuth,campController.registerToCamp);
+router.get("/showRegisteredCamp",checkAuth,campController.showRegisteredCamp);
+
 router.get("/count",checkAuth,functionController.getCounts);
 
 module.exports = router;
