@@ -6,7 +6,7 @@ const joi = require("@hapi/joi");    // For Validation
 const e = require('express');
 
 function allBankDetails(req, res){
-    var selectQuery = "SELECT bankId ,name , emailId,mobile,pincode from Bloodbankdata";
+    var selectQuery = "SELECT bankId,name,pincode,city ,state,country,emailId,mobile,pincode from Bloodbankdata";
     mysqlConnection.query(selectQuery,(err, rows, fields) => {
         if (err) res.status(400).send({ message: err });
         if(rows.length<=0){

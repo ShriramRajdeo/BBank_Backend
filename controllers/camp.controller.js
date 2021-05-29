@@ -6,6 +6,19 @@ const joi = require("@hapi/joi");    // For Validation
 const e = require('express');
 
 
+const schema = joi.object({
+    name: joi.string().min(3).required(),
+    email: joi.string().min(6).max(20).required().email(),
+    mobile: joi.string().regex(/^[0-9]{10}$/).messages({'string.pattern.base': 'Phone number must have 10 digits.'}).required(),
+    fromDate: joi.date().raw().required(),
+    toDate: joi.date().raw().required(),
+    address: joi.string().max(20).required(),
+    pincode: joi.string().max(6).required(),
+    city: joi.string().max(20).required(),
+    state: joi.string().max(20).required(),
+    country: joi.string().max(20).required()
+});
+
 function showCampByBank(req, res){
     var id = req.body.data.id 
     var selectQuery = "SELECT * from campData where bankId = ?";
@@ -73,6 +86,9 @@ function showRegisteredCamp(req, res){
 
 
 function organizeCamp(req, res){
+    const {error} = schema.validate(req.body);
+    if (error) return res.status(400).send({message:error.details[0].message});
+
     var bankId = req.body.data.id
     var campDetail=[];
     campDetail.push(bankId);
