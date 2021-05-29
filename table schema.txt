@@ -1,4 +1,5 @@
-
+CREATE database bbank_database
+USE bbank_database
 
 CREATE TABLE IF NOT EXISTS userData(  
     userId int NOT NULL AUTO_INCREMENT,  
@@ -88,3 +89,9 @@ CREATE TABLE IF NOT EXISTS registerData(
     FOREIGN KEY (userId) REFERENCES userData(userId)
 );
 
+select * from userData;
+select * from bloodBankData;
+select * from campData;
+select * from requestData;
+select * from stockData;
+select * from registerData;
