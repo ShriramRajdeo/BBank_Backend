@@ -23,6 +23,6 @@ router.get("/getCamp",checkAuth,campController.showCampsToUser);
 router.post("/registerToCamp",checkAuth,campController.registerToCamp);
 router.get("/showRegisteredCamp",checkAuth,campController.showRegisteredCamp);
 
-router.get("/count",checkAuth,functionController.getCounts);
+router.get("/count",functionController.getCounts);
 
 module.exports = router;

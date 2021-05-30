@@ -18,7 +18,13 @@ function allBankDetails(req, res){
 
 
 function getCounts(req, res){
-    var selectQuery = "SELECT COUNT(*) FROM userdata UNION SELECT COUNT(*) FROM bloodbankdata UNION SELECT COUNT(*) FROM campdata WHERE CURDATE() between fromDate and toDate";
+    var usersQuery = "(select COUNT(*) from userdata ) as users ,";
+    var bbanksQuery = "(select COUNT(*) from bloodbankdata ) as bbanks ,";
+    var campsQuery = "(select COUNT(*) from campData) as camps , ";
+    var stocksQuery = "(select sum (Apos + Aneg + Bpos + Bneg + ABpos + ABneg + Opos + Oneg ) from stockdata) as stocks ";
+    
+    var selectQuery = "select" +usersQuery+ bbanksQuery+campsQuery+stocksQuery;
+
     mysqlConnection.query(selectQuery,(err, rows, fields) => {
         if (err) res.status(400).send({ message: err });
         if(rows.length<=0){

@@ -11,7 +11,7 @@ router.get("/",checkAuth,function(req,res){
 
 router.get("/profile",checkAuth,bankController.profile);
 router.put("/updateProfile",checkAuth,bankController.updateProfile);
-router.get("/count",checkAuth,functionController.getCounts);
+router.get("/count",functionController.getCounts);
 
 router.put("/updateStock",checkAuth,bankController.updateStock);
 router.get("/getStockOfBank",checkAuth,bankController.getStockOfBank);
